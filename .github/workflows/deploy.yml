@@ -24,35 +24,26 @@ jobs:
         script: |
           echo "=== Bastion → FastAPI Deploy ==="
 
-          ssh python2b
-
-            set -e
-            cd /home/ubuntu/testfast
-
-            echo "1. Git pull"
-            git pull origin main
-
-            echo "2. Activate venv"
-            source venv/bin/activate
-
-            echo "3. Install requirements"
-            pip install -r requirements.txt
-
-            echo "4. Restart FastAPI"
-            sudo systemctl restart fastapi
-
-            sleep 3
-
-            echo "5. Local FastAPI health check"
+          # Bastion에서 FastAPI 서버로 SSH 접속 후 한 줄 명령으로 실행
+          ssh ubuntu@${{ secrets.FASTAPI_PRIVATE_IP }} "set -e &&
+            cd /home/ubuntu/testfast &&
+            echo '1. Git pull' &&
+            git pull origin main &&
+            echo '2. Activate venv' &&
+            source venv/bin/activate &&
+            echo '3. Install requirements' &&
+            pip install -r requirements.txt &&
+            echo '4. Restart FastAPI' &&
+            sudo systemctl restart fastapi &&
+            sleep 3 &&
+            echo '5. Local FastAPI health check' &&
             curl -f http://127.0.0.1:8000
-
-          EOF
+          "
 
           echo "=== FastAPI OK ==="
 
           echo "=== Nginx → FastAPI Test ==="
-          ssh ubuntu@${{ secrets.NGINX_PUBLIC_IP }} \
-            "curl -f http://${{ secrets.FASTAPI_PRIVATE_IP }}:8000"
+          curl -f http://${{ secrets.FASTAPI_PRIVATE_IP }}:8000
 
           echo "=== Domain Health Check ==="
           curl -f https://popori.store/health
