@@ -24,9 +24,9 @@ jobs:
         script: |
           echo "=== Bastion → FastAPI Deploy ==="
 
-          # Bastion에서 FastAPI 서버로 SSH 접속 후 한 줄 명령으로 실행
-          ssh ubuntu@${{ secrets.FASTAPI_PRIVATE_IP }} "set -e &&
-            cd /home/ubuntu/testfast &&
+          # Bastion에서 FastAPI 서버로 SSH 접속
+          ssh -i ~/.ssh/02T-powermvp.pem ubuntu@${{ secrets.FASTAPI_PRIVATE_IP }} "set -e &&
+            cd ${FASTAPI_DIR} &&
             echo '1. Git pull' &&
             git pull origin main &&
             echo '2. Activate venv' &&
@@ -37,13 +37,13 @@ jobs:
             sudo systemctl restart fastapi &&
             sleep 3 &&
             echo '5. Local FastAPI health check' &&
-            curl -f http://127.0.0.1:8000
+            curl -f http://127.0.0.1:${FASTAPI_PORT}
           "
 
           echo "=== FastAPI OK ==="
 
           echo "=== Nginx → FastAPI Test ==="
-          curl -f http://${{ secrets.FASTAPI_PRIVATE_IP }}:8000
+          curl -f http://${{ secrets.FASTAPI_PRIVATE_IP }}:${FASTAPI_PORT}
 
           echo "=== Domain Health Check ==="
           curl -f https://popori.store/health
