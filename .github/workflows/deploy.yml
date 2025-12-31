@@ -25,28 +25,27 @@ jobs:
           echo "=== Bastion → FastAPI Deploy ==="
 
           ssh -i ${{ secrets.EC2_SSH_KEY }} \
-              -o StrictHostKeyChecking=no \
               ubuntu@${{ secrets.FASTAPI_PRIVATE_IP }} << 'EOF'
 
-            set -e
-            cd /home/ubuntu/testfast
+          set -e
+          cd /home/ubuntu/testfast
 
-            echo "1. Git pull"
-            git pull origin main
+          echo "1. Git pull"
+          git pull origin main
 
-            echo "2. Activate venv"
-            source venv/bin/activate
+          echo "2. Activate venv"
+          source venv/bin/activate
 
-            echo "3. Install requirements"
-            pip install -r requirements.txt
+          echo "3. Install requirements"
+          pip install -r requirements.txt
 
-            echo "4. Restart FastAPI"
-            sudo systemctl restart fastapi
+          echo "4. Restart FastAPI"
+          sudo systemctl restart fastapi
 
-            sleep 3
+          sleep 3
 
-            echo "5. Local FastAPI health check"
-            curl -f http://127.0.0.1:8000
+          echo "5. Local FastAPI health check"
+          curl -f http://127.0.0.1:8000
 
           EOF
 
