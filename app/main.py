@@ -57,3 +57,12 @@ def recommend(user_id: int, db: Session = Depends(get_db)):
 @app.get("/")
 def root():
     return {"message": "FastAPI recommendation backend is running"}
+
+@app.get("/api/health")
+def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        "status": "healthy",
+        "service": "FastAPI Backend",
+        "version": "0.1.0"
+    }
