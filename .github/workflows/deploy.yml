@@ -24,7 +24,7 @@ jobs:
         script: |
           echo "=== Bastion → FastAPI Deploy ==="
 
-          ssh -i ~/.ssh/02T-powermvp.pem \
+          ssh -i ${{ secrets.EC2_SSH_KEY }} \
               -o StrictHostKeyChecking=no \
               ubuntu@${{ secrets.FASTAPI_PRIVATE_IP }} << 'EOF'
 
