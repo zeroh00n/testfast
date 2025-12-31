@@ -2,10 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
     branches: [ main ]
-  workflow_dispatch:
 
 env:
   PYTHON_VERSION: '3.11'
@@ -69,4 +66,18 @@ jobs:
       with:
         file: ./coverage.xml
         fail_ci_if_error: false
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: test   # 👈 중요!
+
+    steps:
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          ~/deploy/deploy.sh
 
